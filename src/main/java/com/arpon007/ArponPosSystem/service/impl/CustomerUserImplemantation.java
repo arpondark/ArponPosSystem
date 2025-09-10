@@ -4,13 +4,17 @@ package com.arpon007.ArponPosSystem.service.impl;
 import com.arpon007.ArponPosSystem.Repo.UserRepository;
 import com.arpon007.ArponPosSystem.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Service;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Collection;
+import java.util.Collections;
+
+@Service
 public class CustomerUserImplemantation implements UserDetailsService {
     @Autowired
     private UserRepository userRepo;
@@ -23,7 +27,7 @@ public class CustomerUserImplemantation implements UserDetailsService {
         }
 
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(user.getRole().toString());
-
-        return null;
+        Collection<GrantedAuthority> grantedAuthorities = Collections.singleton(grantedAuthority);
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
     }
 }
