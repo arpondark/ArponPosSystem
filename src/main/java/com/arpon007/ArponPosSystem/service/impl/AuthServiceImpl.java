@@ -33,28 +33,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse signup(UserDto userDto) throws UserException {
-        User user = userRepository.findByEmail(userDto.getEmail());
-        if(user != null){
-            throw new UserException("Email Already Exist");
-        }
         if(userDto.getRole() == UserRole.ROLE_ADMIN){
             throw new UserException("Cannot Register as Admin");
         }
-        User newUser = new User();
-        newUser.setEmail(userDto.getEmail());
-        newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        newUser.setRole(userDto.getRole());
-        newUser.setFullName(userDto.getFullName());
-        newUser.setPhone(userDto.getPhone());
-        userRepository.save(newUser);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateToken(authentication);
-        AuthResponse authResponse = new AuthResponse();
-        authResponse.setJwt(jwt);
-        authResponse.setMessage("User Registered Successfully");
-        authResponse.setUser(UserMapper.toDto(newUser));
-        return authResponse;
+        return createUser(userDto, "User Registered Successfully");
     }
 
     @Override
@@ -68,6 +50,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(email);
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
+        
         AuthResponse authResponse = new AuthResponse();
         authResponse.setJwt(jwt);
         authResponse.setMessage("User Login Successfully");
@@ -77,6 +60,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse signupAdmin(UserDto userDto) throws UserException {
+        userDto.setRole(UserRole.ROLE_ADMIN); // Force admin role
+        return createUser(userDto, "Admin User Registered Successfully");
+    }
+
+    private AuthResponse createUser(UserDto userDto, String successMessage) throws UserException {
         User user = userRepository.findByEmail(userDto.getEmail());
         if(user != null){
             throw new UserException("Email Already Exist");
@@ -85,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
         User newUser = new User();
         newUser.setEmail(userDto.getEmail());
         newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        newUser.setRole(UserRole.ROLE_ADMIN); // Force admin role
+        newUser.setRole(userDto.getRole());
         newUser.setFullName(userDto.getFullName());
         newUser.setPhone(userDto.getPhone());
         userRepository.save(newUser);
@@ -96,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
 
         AuthResponse authResponse = new AuthResponse();
         authResponse.setJwt(jwt);
-        authResponse.setMessage("Admin User Registered Successfully");
+        authResponse.setMessage(successMessage);
         authResponse.setUser(UserMapper.toDto(newUser));
         return authResponse;
     }

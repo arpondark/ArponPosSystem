@@ -1,5 +1,11 @@
 package com.arpon007.ArponPosSystem.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.arpon007.ArponPosSystem.Repo.StoreRepository;
 import com.arpon007.ArponPosSystem.mapper.StoreMapper;
 import com.arpon007.ArponPosSystem.models.Store;
@@ -7,12 +13,8 @@ import com.arpon007.ArponPosSystem.models.StoreStatus;
 import com.arpon007.ArponPosSystem.models.User;
 import com.arpon007.ArponPosSystem.payload.dto.StoreDto;
 import com.arpon007.ArponPosSystem.service.StoreService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +32,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public StoreDto getStoreById(Long id) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Store not found with id: " + id));
+        Store store = findStoreByIdOrThrow(id);
         return StoreMapper.toDto(store);
     }
 
@@ -45,17 +46,13 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public StoreDto getAllStoreByAdmin(User user) {
-        Store store = storeRepository.findByStoreAdminId(user.getId());
-        if (store == null) {
-            throw new RuntimeException("Store not found for admin: " + user.getId());
-        }
+        Store store = findStoreByAdminOrThrow(user);
         return StoreMapper.toDto(store);
     }
 
     @Override
     public StoreDto updateStore(Long id, StoreDto storeDto) {
-        Store existingStore = storeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Store not found with id: " + id));
+        Store existingStore = findStoreByIdOrThrow(id);
 
         // Update store fields
         existingStore.setBrand(storeDto.getBrand());
@@ -71,8 +68,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public StoreDto deleteStore(Long id) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Store not found with id: " + id));
+        Store store = findStoreByIdOrThrow(id);
         StoreDto storeDto = StoreMapper.toDto(store);
         storeRepository.delete(store);
         return storeDto;
@@ -82,10 +78,20 @@ public class StoreServiceImpl implements StoreService {
     public StoreDto getStoreByEmployee(User user) {
         // Assuming user has a reference to the store they work for
         // If not, you'll need to adjust this implementation based on your domain model
+        Store store = findStoreByAdminOrThrow(user);
+        return StoreMapper.toDto(store);
+    }
+
+    private Store findStoreByIdOrThrow(Long id) {
+        return storeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Store not found with id: " + id));
+    }
+
+    private Store findStoreByAdminOrThrow(User user) {
         Store store = storeRepository.findByStoreAdminId(user.getId());
         if (store == null) {
-            throw new RuntimeException("Store not found for employee: " + user.getId());
+            throw new RuntimeException("Store not found for user: " + user.getId());
         }
-        return StoreMapper.toDto(store);
+        return store;
     }
 }

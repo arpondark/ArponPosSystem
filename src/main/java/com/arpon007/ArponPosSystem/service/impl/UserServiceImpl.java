@@ -1,15 +1,17 @@
 package com.arpon007.ArponPosSystem.service.impl;
 
+import java.util.List;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.arpon007.ArponPosSystem.Repo.UserRepository;
 import com.arpon007.ArponPosSystem.config.JwtProvider;
 import com.arpon007.ArponPosSystem.exception.UserException;
 import com.arpon007.ArponPosSystem.models.User;
 import com.arpon007.ArponPosSystem.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -29,23 +31,13 @@ public class UserServiceImpl implements UserService {
             throw new UserException("Invalid or expired token");
         }
 
-        User user = userRepository.findByEmail(email);
-        if(user==null){
-            
-            throw new UserException("User not found");
-        }
-        return user;
+        return findUserByEmailOrThrow(email);
     }
 
     @Override
     public User getCurrentUser() throws UserException {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email);
-        if(user==null){
-            throw new UserException("User not found");
-        }
-
-        return user;
+        return findUserByEmailOrThrow(email);
     }
 
     @Override
@@ -56,5 +48,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    private User findUserByEmailOrThrow(String email) throws UserException {
+        User user = userRepository.findByEmail(email);
+        if(user == null){
+            throw new UserException("User not found");
+        }
+        return user;
     }
 }
