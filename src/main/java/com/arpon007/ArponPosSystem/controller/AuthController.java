@@ -23,6 +23,12 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/signup-admin")
+    public ResponseEntity<AuthResponse> signupAdminHandler(@RequestBody UserDto userDto) throws UserException {
+        AuthResponse response = authService.signupAdmin(userDto);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginHandler(@RequestBody UserDto userDto) throws UserException {
         AuthResponse response = authService.login(userDto);

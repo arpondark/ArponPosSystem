@@ -7,4 +7,5 @@ import com.arpon007.ArponPosSystem.payload.response.AuthResponse;
 public interface AuthService {
     AuthResponse signup(UserDto userDto) throws UserException;
     AuthResponse login(UserDto userDto) throws UserException;
+    AuthResponse signupAdmin(UserDto userDto) throws UserException;
 }

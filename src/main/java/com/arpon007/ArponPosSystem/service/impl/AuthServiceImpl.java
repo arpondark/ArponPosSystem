@@ -75,6 +75,32 @@ public class AuthServiceImpl implements AuthService {
         return authResponse;
     }
 
+    @Override
+    public AuthResponse signupAdmin(UserDto userDto) throws UserException {
+        User user = userRepository.findByEmail(userDto.getEmail());
+        if(user != null){
+            throw new UserException("Email Already Exist");
+        }
+
+        User newUser = new User();
+        newUser.setEmail(userDto.getEmail());
+        newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        newUser.setRole(UserRole.ROLE_ADMIN); // Force admin role
+        newUser.setFullName(userDto.getFullName());
+        newUser.setPhone(userDto.getPhone());
+        userRepository.save(newUser);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtProvider.generateToken(authentication);
+
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setJwt(jwt);
+        authResponse.setMessage("Admin User Registered Successfully");
+        authResponse.setUser(UserMapper.toDto(newUser));
+        return authResponse;
+    }
+
     private Authentication authenticate(String email, String password) throws UserException {
         UserDetails userDetails = customerUserImplemantation.loadUserByUsername(email);
         if(userDetails == null) {
