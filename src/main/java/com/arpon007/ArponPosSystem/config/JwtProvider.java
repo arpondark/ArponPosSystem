@@ -53,6 +53,11 @@ public class JwtProvider {
 
     public String getEmailFromToken(String token) {
         try {
+            // Trim any whitespace that might be present
+            if (token != null) {
+                token = token.trim();
+            }
+
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
@@ -68,6 +73,11 @@ public class JwtProvider {
 
     public boolean isTokenValid(String token) {
         try {
+            // Trim any whitespace that might be present
+            if (token != null) {
+                token = token.trim();
+            }
+
             Jwts.parser()
                     .verifyWith(key)
                     .build()
