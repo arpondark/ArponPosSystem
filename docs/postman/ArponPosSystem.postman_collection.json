@@ -1,0 +1,959 @@
+{
+	"info": {
+		"_postman_id": "12345678-1234-1234-1234-123456789abc",
+		"name": "ArponPosSystem API - Complete Testing Collection",
+		"description": "Complete API testing collection for ArponPosSystem with pre-built test data and automatic token management. Import the environment file to get started.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"description": "User authentication endpoints",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.jwt) {",
+									"        pm.environment.set('jwt', responseData.jwt);",
+									"        console.log('JWT token saved:', responseData.jwt);",
+									"    }",
+									"    if (responseData.user && responseData.user.id) {",
+									"        pm.environment.set('userId', responseData.user.id);",
+									"        console.log('User ID saved:', responseData.user.id);",
+									"    }",
+									"    pm.test('Registration successful', function () {",
+									"        pm.response.to.have.status(200);",
+									"        pm.expect(responseData).to.have.property('jwt');",
+									"        pm.expect(responseData).to.have.property('user');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"+1234567890\",\n    \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					}
+				},
+				{
+					"name": "Register Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.jwt) {",
+									"        pm.environment.set('adminJwt', responseData.jwt);",
+									"        pm.environment.set('jwt', responseData.jwt);",
+									"        console.log('Admin JWT token saved:', responseData.jwt);",
+									"    }",
+									"    if (responseData.user && responseData.user.id) {",
+									"        pm.environment.set('adminUserId', responseData.user.id);",
+									"        pm.environment.set('userId', responseData.user.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"Admin User\",\n    \"email\": \"admin@arponpos.com\",\n    \"phone\": \"+1987654321\",\n    \"password\": \"AdminPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/signup-admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"signup-admin"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.jwt) {",
+									"        pm.environment.set('jwt', responseData.jwt);",
+									"        console.log('JWT token updated:', responseData.jwt);",
+									"    }",
+									"    if (responseData.user && responseData.user.id) {",
+									"        pm.environment.set('userId', responseData.user.id);",
+									"    }",
+									"    pm.test('Login successful', function () {",
+									"        pm.response.to.have.status(200);",
+									"        pm.expect(responseData).to.have.property('jwt');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👤 Users",
+			"description": "User management endpoints",
+			"item": [
+				{
+					"name": "Get User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Profile retrieved successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const responseData = pm.response.json();",
+									"    pm.expect(responseData).to.have.property('id');",
+									"    pm.expect(responseData).to.have.property('email');",
+									"    pm.expect(responseData).to.have.property('fullName');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"profile"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🏪 Stores",
+			"description": "Store management endpoints",
+			"item": [
+				{
+					"name": "Create Store",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.id) {",
+									"        pm.environment.set('storeId', responseData.id);",
+									"        console.log('Store ID saved:', responseData.id);",
+									"    }",
+									"    pm.test('Store created successfully', function () {",
+									"        pm.response.to.have.status(200);",
+									"        pm.expect(responseData).to.have.property('id');",
+									"        pm.expect(responseData).to.have.property('brand');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"brand\": \"TechMart Electronics\",\n    \"description\": \"Premium electronics and gadgets store\",\n    \"storeType\": \"ELECTRONICS\",\n    \"status\": \"ACTIVE\",\n    \"contract\": {\n        \"address\": \"123 Tech Street, Silicon Valley, CA 94000\",\n        \"Phone\": \"+1-555-TECH-123\",\n        \"email\": \"contact@techmart.com\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/stores",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"stores"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Stores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/stores",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"stores"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Store By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/stores/{{storeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"stores",
+								"{{storeId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Store By Admin",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/stores/admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"stores",
+								"admin"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Store",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"brand\": \"TechMart Electronics Pro\",\n    \"description\": \"Premium electronics and gadgets store with extended warranty\",\n    \"storeType\": \"ELECTRONICS\",\n    \"status\": \"ACTIVE\",\n    \"contract\": {\n        \"address\": \"123 Tech Street, Silicon Valley, CA 94000\",\n        \"Phone\": \"+1-555-TECH-123\",\n        \"email\": \"contact@techmart-pro.com\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/stores/{{storeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"stores",
+								"{{storeId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Store",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/stores/{{storeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"stores",
+								"{{storeId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Store By Employee",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/stores/employee",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"stores",
+								"employee"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📂 Categories",
+			"description": "Product category management",
+			"item": [
+				{
+					"name": "Create Electronics Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.id) {",
+									"        pm.environment.set('electronicsCategory', responseData.id);",
+									"        pm.environment.set('categoryId', responseData.id);",
+									"        console.log('Electronics Category ID saved:', responseData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Electronics\",\n    \"storeId\": {{storeId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Mobile Phones Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.id) {",
+									"        pm.environment.set('mobilePhonesCategory', responseData.id);",
+									"        console.log('Mobile Phones Category ID saved:', responseData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mobile Phones\",\n    \"storeId\": {{storeId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Electronics & Gadgets\",\n    \"storeId\": {{storeId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/{{categoryId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Categories By Store",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/store/{{storeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"store",
+								"{{storeId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/{{categoryId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📱 Products",
+			"description": "Product management and search",
+			"item": [
+				{
+					"name": "Create iPhone Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.id) {",
+									"        pm.environment.set('iPhoneProductId', responseData.id);",
+									"        pm.environment.set('productId', responseData.id);",
+									"        console.log('iPhone Product ID saved:', responseData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"iPhone 15 Pro Max\",\n    \"sku\": \"IPHONE-15-PM-256\",\n    \"mrp\": 1299.99,\n    \"sellingPrice\": 1199.99,\n    \"brand\": \"Apple\",\n    \"color\": \"Titanium Blue\",\n    \"imageUrl\": \"https://example.com/iphone15promax.jpg\",\n    \"description\": \"Latest iPhone with A17 Pro chip, 256GB storage, Pro camera system\",\n    \"categoryId\": {{electronicsCategory}},\n    \"storeId\": {{storeId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Samsung Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.id) {",
+									"        pm.environment.set('samsungProductId', responseData.id);",
+									"        console.log('Samsung Product ID saved:', responseData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Samsung Galaxy S24 Ultra\",\n    \"sku\": \"GALAXY-S24-ULTRA-512\",\n    \"mrp\": 1399.99,\n    \"sellingPrice\": 1299.99,\n    \"brand\": \"Samsung\",\n    \"color\": \"Titanium Gray\",\n    \"imageUrl\": \"https://example.com/galaxys24ultra.jpg\",\n    \"description\": \"Premium Android flagship with S Pen, 512GB storage, 200MP camera\",\n    \"categoryId\": {{mobilePhonesCategory}},\n    \"storeId\": {{storeId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create MacBook Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const responseData = pm.response.json();",
+									"    if (responseData.id) {",
+									"        pm.environment.set('macbookProductId', responseData.id);",
+									"        console.log('MacBook Product ID saved:', responseData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"MacBook Pro 16-inch M3 Max\",\n    \"sku\": \"MBP-16-M3MAX-1TB\",\n    \"mrp\": 3999.99,\n    \"sellingPrice\": 3799.99,\n    \"brand\": \"Apple\",\n    \"color\": \"Space Black\",\n    \"imageUrl\": \"https://example.com/macbookpro16.jpg\",\n    \"description\": \"Professional laptop with M3 Max chip, 1TB SSD, 36GB RAM\",\n    \"categoryId\": {{electronicsCategory}},\n    \"storeId\": {{storeId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"iPhone 15 Pro Max - Updated\",\n    \"sku\": \"IPHONE-15-PM-256\",\n    \"mrp\": 1299.99,\n    \"sellingPrice\": 1149.99,\n    \"brand\": \"Apple\",\n    \"color\": \"Titanium Blue\",\n    \"imageUrl\": \"https://example.com/iphone15promax-updated.jpg\",\n    \"description\": \"Latest iPhone with A17 Pro chip, 256GB storage, Pro camera system - Now with special discount!\",\n    \"categoryId\": {{electronicsCategory}},\n    \"storeId\": {{storeId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Products By Store",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/store/{{storeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"store",
+								"{{storeId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Products - iPhone",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/store/{{storeId}}/search?keyword=iPhone",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"store",
+								"{{storeId}}",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "iPhone"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Products - Samsung",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/store/{{storeId}}/search?keyword=Samsung",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"store",
+								"{{storeId}}",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "Samsung"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Products - MacBook",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/store/{{storeId}}/search?keyword=MacBook",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"store",
+								"{{storeId}}",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "MacBook"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Products By Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/category/{{categoryId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"category",
+								"{{categoryId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Products By Store and Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/store/{{storeId}}/category/{{categoryId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"store",
+								"{{storeId}}",
+								"category",
+								"{{categoryId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "{{baseUrl}}"
+		},
+		{
+			"key": "jwt",
+			"value": "{{jwt}}"
+		},
+		{
+			"key": "userId",
+			"value": "{{userId}}"
+		},
+		{
+			"key": "storeId",
+			"value": "{{storeId}}"
+		},
+		{
+			"key": "categoryId",
+			"value": "{{categoryId}}"
+		},
+		{
+			"key": "productId",
+			"value": "{{productId}}"
+		}
+	]
+}
