@@ -869,4 +869,3 @@ curl -X GET http://localhost:8080/api/stores/employee \
 - Passwords are not returned in API responses for security reasons
 - Email addresses must be unique across the system
 - JWT tokens should be stored securely on the client side
-- Always use HTTPS in production environments
